@@ -26,6 +26,8 @@ public class Launcher {
 		Cryptologist cryptologist2 = new Vigenere();
 		System.out.println(cryptologist2.encrypt("TEST", "KEY"));
 		System.out.println(cryptologist2.decrypt("EJRE", "KEY"));
+		
+		System.out.println("test");
 
 	}
 
