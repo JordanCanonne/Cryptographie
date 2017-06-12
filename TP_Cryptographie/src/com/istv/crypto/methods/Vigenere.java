@@ -1,14 +1,15 @@
 package com.istv.crypto.methods;
 
-import com.istv.crypto.methods.interfaces.Cryptologist;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import com.istv.crypto.structure.Alphabet;
 import com.istv.crypto.structure.Type;
 import com.istv.crypto.utils.Utils;
 
-public class Vigenere implements Cryptologist {
+public class Vigenere {
 
-
-	@Override
 	public String encrypt(String clear, String key) {
 
 		if (Utils.isAuthorized(clear)){
@@ -50,8 +51,7 @@ public class Vigenere implements Cryptologist {
 		}
 	}
 
-	@Override
-	public String decrypt(String chiffred, String key) {
+	public String decipher(String chiffred, String key) {
 
 		if(Utils.isAuthorized(chiffred)) {
 
@@ -89,6 +89,61 @@ public class Vigenere implements Cryptologist {
 
 		} else {
 			return "Invalid input text.";
+		}
+	}
+	
+	public String decrypt(String chiffred){
+		if (Utils.isAuthorized(chiffred)){
+			String clear = "";
+			HashMap<Integer, Float> indices = new HashMap<Integer, Float>(); 
+			int keySize = 1;
+			// La taille maximum de la clé est fixé à 25, taille du mot le plus long du dictonnaire francais
+			int maxKeySize = 25;
+			while(keySize <= maxKeySize){
+				List<String> subsequences = Utils.getSubsequences(chiffred, keySize);
+				float indexAVG = 0;
+				for (Iterator<String> iterator = subsequences.iterator(); iterator.hasNext();) {
+					String subsequence = (String) iterator.next();
+					float index = Utils.getCoincidenceIndex(subsequence);
+					indexAVG += index;
+				}
+				indexAVG = indexAVG / subsequences.size();
+				indices.put(keySize, indexAVG);
+				keySize++;
+			}
+			
+			// arbitraire, delta grand
+			float delta = (float)100;
+			// source : Friedman
+			float frenchIndex = (float) 0.0778;
+			int keyLength = 1;
+			// Recherche de la longueur de clé qui donne l'indice de coincidence le plus proche de la langue francaise.
+			for(keySize = 1; keySize <= maxKeySize;  keySize++){
+				if ( Math.abs(frenchIndex - indices.get(keySize)) <= delta ){
+					delta = Math.abs(frenchIndex - indices.get(keySize));
+					keyLength = keySize;
+				}
+			}
+			// On a maintenant la longueur probable de la clé.
+			
+			List<String> subsequences = Utils.getSubsequences(chiffred, keyLength);
+			
+			String key = "";
+			
+			Iterator<String> iterator = subsequences.iterator();
+			
+			while (iterator.hasNext()) {
+				String subsequence = (String) iterator.next();
+				char moreUsedChar = Utils.getMoreUsedChar(subsequence);
+				char elementKey = Utils.getShift(moreUsedChar, 'E');
+				key += elementKey;
+			}
+			
+			clear = this.decipher(chiffred, key);
+			
+			return clear;
+		} else {
+			return "Invalid input text";
 		}
 	}
 

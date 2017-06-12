@@ -1,17 +1,18 @@
 package com.istv.crypto.methods;
 
-import com.istv.crypto.methods.interfaces.Cryptologist;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.istv.crypto.structure.Alphabet;
 import com.istv.crypto.structure.Type;
 import com.istv.crypto.utils.Utils;
 
-public class Cesar implements Cryptologist {
+public class Cesar {
 
 	public Cesar(){
 
 	}
 
-	@Override
 	public String encrypt(String clear, String key) {		
 
 		if (Utils.isAuthorized(clear)) {
@@ -22,7 +23,7 @@ public class Cesar implements Cryptologist {
 				char[] chiffredC = clear.toCharArray();
 
 				Alphabet alphabet = new Alphabet(k, Type.CLEAR);
-
+				
 				for(int i = 0; i < clear.length(); i++){
 					char c = clearC[i];
 					chiffredC[i]=alphabet.getChiffred(c);
@@ -38,9 +39,8 @@ public class Cesar implements Cryptologist {
 	}
 
 
-	@Override
-	public String decrypt(String chiffred, String key) {
-		// TODO Auto-generated method stub
+	public String decipher(String chiffred, String key) {
+
 		if(Utils.isAuthorized(chiffred)){
 			if (key.length() == 1){
 				char k = key.charAt(0);
@@ -65,8 +65,16 @@ public class Cesar implements Cryptologist {
 		}
 	}
 
-	public String decrypt (String chiffred){
-		return "";
+	// Fonction de décryptage
+	public List<String> decrypt (String chiffred){
+		List<String> result = new ArrayList<String>();
+		
+		// Liste de toutes les solutions possibles
+		for (int i = 0; i <= 25; i++) {
+			char key = (char)(65 + (i/26)*6 + i);
+			result.add(this.decipher(chiffred, String.valueOf(key)));
+		}
+		return result;
 	}
 
 }

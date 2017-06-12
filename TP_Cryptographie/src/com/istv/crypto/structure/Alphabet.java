@@ -3,15 +3,16 @@ package com.istv.crypto.structure;
 import java.util.ArrayList;
 import java.util.List;
 
+//Aplhabet
 public class Alphabet {
 
 	private List<Character> chiffred = new ArrayList<Character>();
 	private List<Character> clear = new ArrayList<Character>();
-	private char key;
+	private String key;
 
 	public Alphabet(char key, Type from){
 
-		this.key=key;
+		this.key= new StringBuilder().append("").append(key).toString();
 
 		for(int i = 0; i <= 25; i++ ){
 			this.clear.add(i, null);
@@ -19,6 +20,7 @@ public class Alphabet {
 		}
 
 		switch (from) {
+		// Constuction de l'aphabet depuis le clair
 		case CLEAR:
 
 			for (int i = 0; i <= 25; i++) {
@@ -33,6 +35,8 @@ public class Alphabet {
 
 			break;
 
+		//Construction de l'aphabet depuis le chiffré
+		//Utile pour le déchiffrage
 		case CHIFFRED:
 
 			for (int i = 0; i <= 25; i++) {
@@ -55,6 +59,27 @@ public class Alphabet {
 		}
 	}
 
+	//Construction d'un alphabet lorsque celui-ci est passé en paramètre
+	//Utile pour la permutation
+	public Alphabet(String key){
+
+		this.key = key;
+
+		for(int i = 0; i <= 25; i++ ){
+			this.clear.add(i, null);
+			this.chiffred.add(i, null);
+		}
+		
+		for (int i = 0; i <= 25; i++) {
+			clear.set(i, (char)(65 + (i/26)*6 + i));
+		}
+
+		for (int i = 0; i <= 25; i++) {
+			char c = this.key.charAt(i);
+			chiffred.set(i, c);
+		}
+	}
+
 	public List<Character> getChiffred() {
 		return chiffred;
 	}
@@ -71,14 +96,15 @@ public class Alphabet {
 		return clear.get(chiffred.indexOf(c));
 	}
 
-	public char getKey() {
+	public String getKey() {
 		return key;
 	}
-
+	
+	
 	private int keyToOffset(Type from){
 		if (from == Type.CLEAR)
-			return clear.indexOf(this.key) + 1;
-		return chiffred.indexOf(this.key) + 1;
+			return clear.indexOf(this.key.charAt(0)) + 1;
+		return chiffred.indexOf(this.key.charAt(0)) + 1;
 	}
 
 	public void setChiffred(List<Character> chiffred) {
@@ -90,7 +116,7 @@ public class Alphabet {
 	}
 
 	public void setKey(char key) {
-		this.key = key;
+		this.key = new StringBuilder().append("").append(key).toString();
 	}
 
 	@Override
